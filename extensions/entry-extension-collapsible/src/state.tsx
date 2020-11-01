@@ -87,7 +87,12 @@ export const useAppState = (
   };
 
   const [state, dispatch] = React.useReducer(produce(reducer), defaultState, (state) => {
-    const stored = localStorage.getItem(storageId);
+    let stored
+    if (typeof window.localStorage !== 'undefined') {
+      stored = localStorage.getItem(storageId);
+    } else {
+       alert('Error: no local storage access. Under Chrome\'s Settings > Privacy > Content settings, you have the cookie setting set to to "Block sites from setting any data"')
+    }
 
     if (stored) {
       const parsed = JSON.parse(stored);
@@ -111,7 +116,7 @@ export const useAppState = (
 
   // On each state change save the new state in local storage
   React.useEffect(() => {
-    localStorage.setItem(storageId, JSON.stringify(state));
+    localStorage?.setItem(storageId, JSON.stringify(state));
   }, [state, storageId]);
 
   return [state, dispatch];
